@@ -1,0 +1,11 @@
+# Nix stuff
+.direnv/
+result
+
+# editor temp files
+*.swp
+*.swo
+tags
+
+#compiled gem files
+*.gem
