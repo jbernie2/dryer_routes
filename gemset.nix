@@ -116,7 +116,7 @@
     };
     version = "1.10.0";
   };
-  dryer_factories = {
+  dryer_routes = {
     dependencies = ["dry-types" "dry-validation"];
     groups = ["default"];
     platforms = [];
@@ -124,7 +124,7 @@
       path = ./.;
       type = "path";
     };
-    version = "0.0.2";
+    version = "0.0.1";
   };
   io-console = {
     groups = ["default" "development"];

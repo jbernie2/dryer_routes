@@ -55,7 +55,7 @@
             gemspec_path = ./dryer_routes.gemspec;
           };
           rubygemsRelease = pkgs.callPackage ./nix/rubygems_release {
-            gemspec_path = ./dryer_factories.gemspec;
+            gemspec_path = ./dryer_routes.gemspec;
           };
         };
       }

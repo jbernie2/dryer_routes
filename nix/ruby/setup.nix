@@ -13,7 +13,7 @@
           name = "ruby-env";
           inherit (pkgs) ruby;
           gemdir = ../..; # Points to Gemfile.lock and gemset.nix
-          extraConfigPaths = [../../dryer_factories.gemspec];
+          extraConfigPaths = [../../dryer_routes.gemspec];
         };
         wrappedRuby = rubyEnv.wrappedRuby;
         updateDeps = pkgs.writeScriptBin "update-deps" (builtins.readFile

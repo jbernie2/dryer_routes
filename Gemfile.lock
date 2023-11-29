@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dryer_factories (0.0.2)
+    dryer_routes (0.0.1)
       dry-types (~> 1.7)
       dry-validation (~> 1.10)
 
@@ -76,7 +76,7 @@ PLATFORMS
 
 DEPENDENCIES
   debug (~> 1.8)
-  dryer_factories!
+  dryer_routes!
   rspec (~> 3.10)
 
 BUNDLED WITH
