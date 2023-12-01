@@ -14,7 +14,7 @@ Add this code to `config/initializers/dry_routes.rb`
 RouteRegistry = Dryer::Routes::Registry.new
 ```
 
-And then in `config/routes.rb` you can register your apps routes, eg.
+And then in `config/routes.rb` you can register your app's routes, eg.
 ```
 Rails.application.routes.draw do
   RouteRegistry.register(
@@ -55,7 +55,9 @@ can be accessed through the gem keeping your code *dry*
 
 ### Easy to find route metadata
 request contracts: `RouteRegistry.users.create.request_contract`
+
 route url: `RouteRegistry.users.create.url`
+
 response contracts: `RouteRegistry.users.create.response_contracts._200`
 
 ### Generating types in controller tests
