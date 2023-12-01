@@ -7,20 +7,21 @@ RSpec.describe Dryer::Routes::Registry do
   let(:resource) {
     {
       controller: UsersController,
-      url: "/users",
-      methods: {
-        post: {
-          controller_action: :create,
+      url: "/users/:id",
+      actions: {
+        create: {
+          url: "/users",
+          method: :post,
           request_contract: UserCreateRequestContract,
           response_contracts: {
             200 => UserCreateResponseContract,
           }
         },
-        patch: {
-          controller_action: :update,
+        update: {
+          method: :patch,
         },
-        get: {
-          controller_action: :find,
+        find: {
+          method: :get,
           response_contracts: {
             200 => UserGetResponseContract,
           }
@@ -42,7 +43,7 @@ RSpec.describe Dryer::Routes::Registry do
   let(:rails_route_user_get) do
     {
       method: :get,
-      url: "/users",
+      url: "/users/:id",
       options: {
         to: "users#find"
       }
@@ -52,7 +53,7 @@ RSpec.describe Dryer::Routes::Registry do
   let(:rails_route_user_patch) do
     {
       method: :patch,
-      url: "/users",
+      url: "/users/:id",
       options: {
         to: "users#update"
       }
@@ -76,18 +77,23 @@ RSpec.describe Dryer::Routes::Registry do
   end
 
   class Request
-    def initialize(request_method, body)
+    def initialize(request_method, params)
       @request_method_symbol = request_method.to_sym
-      @body = body
+      @params = params
     end
-    attr_reader :body, :request_method_symbol
+
     def controller_class
       UsersController
     end
+
+    attr_reader :params, :request_method_symbol
   end
 
   class UsersController
     def self.controller_path
+      "users"
+    end
+    def self.controller_name
       "users"
     end
   end
@@ -261,5 +267,21 @@ RSpec.describe Dryer::Routes::Registry do
         ).to be_empty
       end
     end
+  end
+
+  it "create a class for each route" do
+    registry = described_class.new.tap{ |r| r.register(resource) }
+    expect(
+      registry.users.create
+    ).to be_truthy
+    expect(
+      registry.users.create.request_contract
+    ).to eq(UserCreateRequestContract)
+    expect(
+      registry.users.create.url
+    ).to eq("/users")
+    expect(
+      registry.users.create.response_contracts._200
+    ).to eq(UserCreateResponseContract)
   end
 end

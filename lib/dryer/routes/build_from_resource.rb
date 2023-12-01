@@ -1,4 +1,5 @@
 require_relative "./simple_service"
+require_relative "./route"
 
 module Dryer
   module Routes
@@ -8,12 +9,12 @@ module Dryer
       end
 
       def call
-        resource[:methods].map do |method, config|
+        resource[:actions].map do |action, config|
           Route.new(
             controller: resource[:controller],
-            url: resource[:url],
-            method: method,
-            controller_action: config[:controller_action],
+            url: config[:url] || resource[:url],
+            method: config[:method],
+            controller_action: action,
             request_contract: config[:request_contract],
             response_contracts: config[:response_contracts]
           )

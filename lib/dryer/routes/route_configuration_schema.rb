@@ -4,20 +4,16 @@ module Dryer
       params do
         required(:controller).filled(:class)
         required(:url).filled(:string)
-        required(:methods).hash do
-          optional(:post).hash(MethodSchema)
-          optional(:get).hash(MethodSchema)
-          optional(:patch).hash(MethodSchema)
-          optional(:put).hash(MethodSchema)
-          optional(:delete).hash(MethodSchema)
+        required(:actions).hash do
+          optional(:post).hash(ActionSchema)
         end
       end
 
       class MethodSchema < Dry::Validation::Contract
         params do
-          required(:controller_action).filled(:string)
-          required(:request_contract).filled(:class)
-          required(:response_contrats).hash()
+          required(:method).filled(:string)
+          optional(:request_contract).filled(:class)
+          optional(:response_contracts).hash()
         end
       end
     end

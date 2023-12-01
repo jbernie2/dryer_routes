@@ -33,6 +33,10 @@ module Dryer
         route_config[:response_contracts][status]
       end
 
+      def url
+        route_config[:url]
+      end
+
       private
       attr_reader :route_config
     end

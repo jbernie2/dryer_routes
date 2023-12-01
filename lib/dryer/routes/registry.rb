@@ -1,4 +1,5 @@
 require_relative "./build_from_resource.rb"
+require_relative "./hash_object.rb"
 module Dryer
   module Routes
     class Registry
@@ -8,9 +9,12 @@ module Dryer
         @routes = []
       end
 
-      def register(resource)
-        @resources << resource
-        @routes += BuildFromResource.call(resource)
+      def register(*resources)
+        @resources = resources
+        @routes = resources.map do |r|
+          BuildFromResource.call(r)
+        end.flatten
+        add_accessors_for_resources(resources)
         @routes
       end
 
@@ -19,12 +23,12 @@ module Dryer
       end
 
       def validate_request(request)
-        route = @routes.filter do |r|
-          r.controller == request.controller_class &&
-          r.method == request.request_method_symbol
-        end.first.then do |route|
+        route_for(
+          controller: request.controller_class,
+          method: request.request_method_symbol
+        ).then do |route|
           if route && route.request_contract
-            route.request_contract.new.call(request.body).errors
+            route.request_contract.new.call(request.params).errors
           else
             []
           end
@@ -32,10 +36,10 @@ module Dryer
       end
 
       def validate_response(controller:, method:, status:, body:)
-        route = @routes.filter do |r|
-          r.controller == controller &&
-          r.method == method
-        end.first.then do |route|
+        route_for(
+          controller: controller.class,
+          method: method.to_sym
+        ).then do |route|
           if route && route.response_contract_for(status)
             route.response_contract_for(status).new.call(body).errors
           else
@@ -44,10 +48,41 @@ module Dryer
         end
       end
 
+      def route_for(controller:, method:)
+        @routes.filter do |r|
+          r.controller == controller
+          r.method == method
+        end.first
+      end
+
       attr_reader :routes, :resources
 
       private
       attr_writer :routes, :resources
+
+      def add_accessors_for_resources(resources)
+        denormalize_resources(resources).inject(self) do |obj, (key, value)|
+          obj.define_singleton_method(key) { HashObject.new(value) }
+          obj
+        end
+      end
+
+      def denormalize_resources(resources)
+        resources.inject({}) do | h, resource |
+          h[
+            resource[:controller].controller_name.to_sym
+          ] = denormalize_resource(resource)
+          h
+        end
+      end
+
+      def denormalize_resource(resource)
+        resource[:actions].each do |key, value|
+          resource[:actions][key][:url] =
+            resource[:actions][key][:url] || resource[:url]
+        end
+        resource.merge(resource[:actions])
+      end
     end
   end
 end
