@@ -1,5 +1,7 @@
 require_relative "./build_from_resource.rb"
 require_relative "./hash_object.rb"
+require_relative "./resource_schema.rb"
+
 module Dryer
   module Routes
     class Registry
@@ -10,6 +12,7 @@ module Dryer
       end
 
       def register(*resources)
+        validate_resources!(resources)
         @resources = resources
         @routes = resources.map do |r|
           BuildFromResource.call(r)
@@ -82,6 +85,18 @@ module Dryer
             resource[:actions][key][:url] || resource[:url]
         end
         resource.merge(resource[:actions])
+      end
+
+      def validate_resources!(resources)
+        errors = resources.map do |r|
+          ResourceSchema.new.call(r)
+        end.select { |r| !r.errors.empty? }
+        if !errors.empty?
+          messages = errors.inject({}) do |messages, e|
+            messages.merge(e.errors.to_h)
+          end
+          raise "Invalid arguments: #{messages}"
+        end
       end
     end
   end

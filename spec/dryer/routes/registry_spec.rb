@@ -284,4 +284,81 @@ RSpec.describe Dryer::Routes::Registry do
       registry.users.create.response_contracts._200
     ).to eq(UserCreateResponseContract)
   end
+
+  context "when the http method is missing" do
+    let(:resource) do
+      {
+        controller: UsersController,
+        url: "/users/:id",
+        actions: {
+          create: {
+            url: "/users",
+            request_contract: UserCreateRequestContract,
+            response_contracts: {
+              200 => UserCreateResponseContract,
+            }
+          }
+        }
+      }
+    end
+
+    it " raises an error" do
+      expect { described_class.new.register(resource) }.to raise_error(
+        RuntimeError,
+        /Invalid arguments: {:actions=>{:method=>\["is missing"\]}}/
+      )
+    end
+  end
+
+  context "when request_contract is not a contract" do
+    let(:resource) do
+      {
+        controller: UsersController,
+        url: "/users/:id",
+        actions: {
+          create: {
+            url: "/users",
+            method: :post,
+            request_contract: Object,
+            response_contracts: {
+              200 => UserCreateResponseContract,
+            }
+          }
+        }
+      }
+    end
+
+    it " raises an error" do
+      expect { described_class.new.register(resource) }.to raise_error(
+        RuntimeError,
+        /Invalid arguments: {:actions=>{:request_contract=>\["must be a dry-validation contract"\]}}/
+      )
+    end
+  end
+
+  context "when response_contracts are not contracts" do
+    let(:resource) do
+      {
+        controller: UsersController,
+        url: "/users/:id",
+        actions: {
+          create: {
+            url: "/users",
+            method: :post,
+            request_contract: UserCreateRequestContract,
+            response_contracts: {
+              200 => Object,
+            }
+          }
+        }
+      }
+    end
+
+    it " raises an error" do
+      expect { described_class.new.register(resource) }.to raise_error(
+        RuntimeError,
+        /Invalid arguments: {:actions=>{:response_contracts=>\["must be a dry-validation contract"\]}}/
+      )
+    end
+  end
 end
