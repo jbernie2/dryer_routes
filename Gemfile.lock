@@ -4,6 +4,7 @@ PATH
     dryer_routes (0.0.1)
       dry-types (~> 1.7)
       dry-validation (~> 1.10)
+      dryer_services (~> 1.0)
 
 GEM
   remote: http://rubygems.org/
@@ -22,6 +23,10 @@ GEM
     dry-inflector (1.0.0)
     dry-initializer (3.1.1)
     dry-logic (1.5.0)
+      concurrent-ruby (~> 1.0)
+      dry-core (~> 1.0, < 2)
+      zeitwerk (~> 2.6)
+    dry-monads (1.6.0)
       concurrent-ruby (~> 1.0)
       dry-core (~> 1.0, < 2)
       zeitwerk (~> 2.6)
@@ -45,13 +50,15 @@ GEM
       dry-initializer (~> 3.0)
       dry-schema (>= 1.12, < 2)
       zeitwerk (~> 2.6)
+    dryer_services (1.0.0)
+      dry-monads (~> 1.6)
     io-console (0.6.0)
-    irb (1.9.1)
+    irb (1.10.1)
       rdoc
       reline (>= 0.3.8)
     psych (5.1.1.1)
       stringio
-    rdoc (6.6.0)
+    rdoc (6.6.1)
       psych (>= 4.0.0)
     reline (0.4.1)
       io-console (~> 0.5)

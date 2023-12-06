@@ -83,6 +83,17 @@
     };
     version = "1.5.0";
   };
+  dry-monads = {
+    dependencies = ["concurrent-ruby" "dry-core" "zeitwerk"];
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["http://rubygems.org"];
+      sha256 = "06sh48d13gyb2lascfd5g2pyf1qxzinydgb0ir81kbwga3zqj0rv";
+      type = "gem";
+    };
+    version = "1.6.0";
+  };
   dry-schema = {
     dependencies = ["concurrent-ruby" "dry-configurable" "dry-core" "dry-initializer" "dry-logic" "dry-types" "zeitwerk"];
     groups = ["default"];
@@ -117,7 +128,7 @@
     version = "1.10.0";
   };
   dryer_routes = {
-    dependencies = ["dry-types" "dry-validation"];
+    dependencies = ["dry-types" "dry-validation" "dryer_services"];
     groups = ["default"];
     platforms = [];
     source = {
@@ -125,6 +136,17 @@
       type = "path";
     };
     version = "0.0.1";
+  };
+  dryer_services = {
+    dependencies = ["dry-monads"];
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["http://rubygems.org"];
+      sha256 = "03xv7p60hda8ik7kdlynfnx6i6fa1iail4pvqxlp673qpzhp7n6r";
+      type = "gem";
+    };
+    version = "1.0.0";
   };
   io-console = {
     groups = ["default" "development"];
@@ -142,10 +164,10 @@
     platforms = [];
     source = {
       remotes = ["http://rubygems.org"];
-      sha256 = "0appka5sbafafn4f8d285skxw3qkhbap28vn9ms0pf7pbp7s2449";
+      sha256 = "1qmy3jb9qffnc6swi4gh3hv2prb6ykpr9mk8jmmjs6vpz5fvnicw";
       type = "gem";
     };
-    version = "1.9.1";
+    version = "1.10.1";
   };
   psych = {
     dependencies = ["stringio"];
@@ -164,10 +186,10 @@
     platforms = [];
     source = {
       remotes = ["http://rubygems.org"];
-      sha256 = "1pnkgnk2vli1y8bbc25qbgv6z2al44dlgcm2mx3ssm34j7xz7gqh";
+      sha256 = "1zaarjpxbxpsfm8i70lmph11q2jdgxmjpslvbpjcyyggkf7nzm6r";
       type = "gem";
     };
-    version = "6.6.0";
+    version = "6.6.1";
   };
   reline = {
     dependencies = ["io-console"];

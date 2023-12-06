@@ -1,9 +1,9 @@
-require_relative "./simple_service"
 require_relative "./route"
+require "dryer_services"
 
 module Dryer
   module Routes
-    class BuildFromResource < SimpleService
+    class BuildFromResource < Dryer::Services::SimpleService
       def initialize(resource)
         @resource = resource
       end
