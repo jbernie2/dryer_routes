@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dryer_routes (0.1.0)
+    dryer_routes (0.2.0)
       dry-types (~> 1.7)
       dry-validation (~> 1.10)
       dryer_services (~> 1.0)
