@@ -138,12 +138,10 @@ end
 ```
 
 ## Development
-This gem is set up to be developed using [Nix](https://nixos.org/)
-Once you have nix installed you can run
-`make bundle`
-to install all dependencies and
-`make dev-shell`
-to enter the development environment.
+This gem is set up to be developed using [Nix](https://nixos.org/) and
+[ruby_gem_dev_shell](https://github.com/jbernie2/ruby_gem_dev_shell)
+Once you have nix installed you can run `make env` to enter the development
+environment and then `make` to see the list of available commands
 
 ## Contributing
 Please create a github issue to report any problems using the Gem.
