@@ -2,61 +2,35 @@
   description = "ruby gem development environment";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-23.05";
+    nixpkgs.url = "nixpkgs/nixos-23.11";
     flake-utils.url = "github:numtide/flake-utils";
     nix-filter.url = "github:numtide/nix-filter";
+    ruby_gem_dev_shell = {
+      url = "github:jbernie2/ruby_gem_dev_shell/main";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils, nix-filter }:
+  outputs = { self, nixpkgs, flake-utils, nix-filter, ruby_gem_dev_shell }:
     flake-utils.lib.eachDefaultSystem (system:
-      let
+    let
+      overlays = [
+        (final: prev: {
+          ruby = final.ruby_3_1;
+        })
+      ];
+      pkgs = import nixpkgs { inherit system overlays; };
 
-        dependencies = {
-          ruby = import ./nix/ruby/setup.nix;
-        };
-
-        pkgOverlays = lib.lists.flatten (
-          builtins.map 
-            (d: d.packageOverlays)
-            (lib.attrsets.attrValues dependencies)
-        );
-        pkgs = import nixpkgs { system = system; overlays = pkgOverlays; };
-        lib = nixpkgs.lib;
-
-        builds = lib.attrsets.mapAttrs (k: v: v.build lib pkgs) dependencies;
-
-        buildInputs = lib.lists.flatten (
-          builtins.map
-            (b: lib.attrsets.attrValues b.outputs)
-            (lib.attrsets.attrValues builds)
-        );
-
-        packages = lib.lists.flatten (
-          ( builtins.map
-            (b: b.packages )
-            (lib.attrsets.attrValues builds)
-          )
-        );
-
-      in
+    in with pkgs;
       {
         devShells = rec {
           default = run;
-          run = pkgs.mkShell {
-            buildInputs = buildInputs;
-            packages = packages;
-          };
-        };
-
-        packages = {
-          default = builds.ruby.outputs.rubyEnv;
-          updateDeps = builds.ruby.outputs.updateDeps;
-          githubRelease = pkgs.callPackage ./nix/github/setup.nix {
-            gemspec_path = ./dryer_routes.gemspec;
-          };
-          rubygemsRelease = pkgs.callPackage ./nix/rubygems_release {
-            gemspec_path = ./dryer_routes.gemspec;
-          };
+          run = ( callPackage
+            ruby_gem_dev_shell
+            {
+              project_root = ./.;
+            }
+          );
         };
       }
     );

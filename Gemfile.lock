@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dryer_routes (0.0.1)
+    dryer_routes (0.1.0)
       dry-types (~> 1.7)
       dry-validation (~> 1.10)
       dryer_services (~> 1.0)
@@ -87,4 +87,4 @@ DEPENDENCIES
   rspec (~> 3.10)
 
 BUNDLED WITH
-   2.4.13
+   2.4.22
