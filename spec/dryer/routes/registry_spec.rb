@@ -265,7 +265,7 @@ RSpec.describe Dryer::Routes::Registry do
     context "when the payload is valid" do
       let(:response) do
         {
-          controller: UsersController,
+          controller: UsersController.new,
           method: :get,
           status: 200,
           body: { quux: 'bar' }
@@ -282,7 +282,7 @@ RSpec.describe Dryer::Routes::Registry do
     context "when the payload is invalid" do
       let(:response) do
         {
-          controller: UsersController,
+          controller: UsersController.new,
           method: :get,
           status: 200,
           body: { bar: 'baz' }
@@ -299,7 +299,7 @@ RSpec.describe Dryer::Routes::Registry do
     context "when there is no contract for the return status" do
       let(:response) do
         {
-          controller: UsersController,
+          controller: UsersController.new,
           method: :get,
           status: 999,
           body: { literally: "anything" }
