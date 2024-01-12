@@ -11,7 +11,8 @@ module Dryer
         @routes = []
       end
 
-      def register(*resources)
+      def register(resources)
+        resources = resources.is_a?(Array) ? resources : [resources]
         validate_resources!(resources)
         @resources = resources
         @routes = resources.map do |r|
@@ -53,8 +54,8 @@ module Dryer
 
       def route_for(controller:, method:)
         @routes.filter do |r|
-          r.controller == controller
-          r.method == method
+          r.controller == controller &&
+            r.method == method
         end.first
       end
 
@@ -91,6 +92,7 @@ module Dryer
         errors = resources.map do |r|
           ResourceSchema.new.call(r)
         end.select { |r| !r.errors.empty? }
+
         if !errors.empty?
           messages = errors.inject({}) do |messages, e|
             messages.merge(e.errors.to_h)

@@ -4,30 +4,45 @@ require 'dry-validation'
 
 RSpec.describe Dryer::Routes::Registry do
 
-  let(:resource) {
-    {
-      controller: UsersController,
-      url: "/users/:id",
-      actions: {
-        create: {
-          url: "/users",
-          method: :post,
-          request_contract: UserCreateRequestContract,
-          response_contracts: {
-            200 => UserCreateResponseContract,
+  let(:resources) {
+    [
+      {
+        controller: UsersController,
+        url: "/users/:id",
+        actions: {
+          create: {
+            url: "/users",
+            method: :post,
+            request_contract: UserCreateRequestContract,
+            response_contracts: {
+              200 => UserCreateResponseContract,
+            }
+          },
+          update: {
+            method: :patch,
+          },
+          find: {
+            method: :get,
+            response_contracts: {
+              200 => UserGetResponseContract,
+            }
           }
-        },
-        update: {
-          method: :patch,
-        },
-        find: {
-          method: :get,
-          response_contracts: {
-            200 => UserGetResponseContract,
+        }
+      },
+      {
+        controller: TagsController,
+        url: "/tags",
+        actions: {
+          create: {
+            method: :post,
+            request_contract: TagCreateRequestContract,
+            response_contracts: {
+              201 => TagCreateResponseContract
+            }
           }
         }
       }
-    }
+    ]
   }
 
   let(:rails_route_user_post) do
@@ -77,16 +92,13 @@ RSpec.describe Dryer::Routes::Registry do
   end
 
   class Request
-    def initialize(request_method, params)
+    def initialize(controller_class, request_method, params)
       @request_method_symbol = request_method.to_sym
       @params = params
+      @controller_class = controller_class
     end
 
-    def controller_class
-      UsersController
-    end
-
-    attr_reader :params, :request_method_symbol
+    attr_reader :controller_class, :params, :request_method_symbol
   end
 
   class UsersController
@@ -98,9 +110,29 @@ RSpec.describe Dryer::Routes::Registry do
     end
   end
 
+  class TagsController
+    def self.controller_path
+      "tags"
+    end
+    def self.controller_name
+      "tags"
+    end
+  end
+
   class UserCreateRequestContract < Dry::Validation::Contract
     params do
       required(:foo).filled(:string)
+    end
+  end
+
+  class TagCreateRequestContract < Dry::Validation::Contract
+    params do
+      required(:name).filled(:string)
+    end
+  end
+
+  class TagCreateResponseContract < Dry::Validation::Contract
+    params do
     end
   end
 
@@ -120,23 +152,23 @@ RSpec.describe Dryer::Routes::Registry do
     let(:registry) { described_class.new }
 
     it "stores the resources passed to it" do
-      registry.register(resource)
+      registry.register(resources)
       expect(
         registry.resources.length
-      ).to eq(1)
+      ).to eq(2)
     end
 
     it "converts resources to routes" do
-      registry.register(resource)
+      registry.register(resources)
       expect(
         registry.routes.length
-      ).to eq(3)
+      ).to eq(4)
     end
   end
 
   describe "#to_rails_routes" do
     let(:registry) do
-      described_class.new.tap{ |r| r.register(resource) }
+      described_class.new.tap{ |r| r.register(resources) }
     end
     it "can return the parameters for building a rails route" do
       expect(
@@ -149,11 +181,20 @@ RSpec.describe Dryer::Routes::Registry do
 
   describe "#validate_request" do
     let(:registry) do
-      described_class.new.tap{ |r| r.register(resource) }
+      described_class.new.tap{ |r| r.register(resources) }
     end
 
     context "when the payload is valid" do
-      let(:request) { Request.new(:post, { foo: 'bar' }) }
+      let(:request) { Request.new(UsersController, :post, { foo: 'bar' }) }
+      it "returns no errors" do
+        expect(
+          registry.validate_request(request)
+        ).to be_empty
+      end
+    end
+
+    context "when the payload is valid" do
+      let(:request) { Request.new(TagsController, :post, { name: 'bar' }) }
       it "returns no errors" do
         expect(
           registry.validate_request(request)
@@ -162,7 +203,7 @@ RSpec.describe Dryer::Routes::Registry do
     end
 
     context "when the payload is invalid" do
-      let(:request) { Request.new(:post, { bar: 'baz' }) }
+      let(:request) { Request.new(UsersController, :post, { bar: 'baz' }) }
       it "returns the errors" do
         expect(
           registry.validate_request(
@@ -173,7 +214,7 @@ RSpec.describe Dryer::Routes::Registry do
     end
 
     context "when there is no matching route" do
-      let(:request) { Request.new(:poop, { bar: 'baz' }) }
+      let(:request) { Request.new(UsersController, :poop, { bar: 'baz' }) }
       it "returns the errors" do
         expect(
           registry.validate_request(
@@ -184,7 +225,7 @@ RSpec.describe Dryer::Routes::Registry do
     end
 
     context "when there is no contract defined" do
-      let(:request) { Request.new(:patch, { bar: 'baz' }) }
+      let(:request) { Request.new(UsersController, :patch, { bar: 'baz' }) }
       it "returns the errors" do
         expect(
           registry.validate_request(
@@ -197,7 +238,7 @@ RSpec.describe Dryer::Routes::Registry do
 
   describe "#validate_response" do
     let(:registry) do
-      described_class.new.tap{ |r| r.register(resource) }
+      described_class.new.tap{ |r| r.register(resources) }
     end
 
     context "when the payload is valid" do
@@ -270,7 +311,7 @@ RSpec.describe Dryer::Routes::Registry do
   end
 
   it "create a class for each route" do
-    registry = described_class.new.tap{ |r| r.register(resource) }
+    registry = described_class.new.tap{ |r| r.register(resources) }
     expect(
       registry.users.create
     ).to be_truthy
@@ -286,7 +327,7 @@ RSpec.describe Dryer::Routes::Registry do
   end
 
   context "when the http method is missing" do
-    let(:resource) do
+    let(:resources) do
       {
         controller: UsersController,
         url: "/users/:id",
@@ -303,7 +344,7 @@ RSpec.describe Dryer::Routes::Registry do
     end
 
     it " raises an error" do
-      expect { described_class.new.register(resource) }.to raise_error(
+      expect { described_class.new.register(resources) }.to raise_error(
         RuntimeError,
         /Invalid arguments: {:actions=>{:method=>\["is missing"\]}}/
       )
@@ -311,7 +352,7 @@ RSpec.describe Dryer::Routes::Registry do
   end
 
   context "when request_contract is not a contract" do
-    let(:resource) do
+    let(:resources) do
       {
         controller: UsersController,
         url: "/users/:id",
@@ -329,7 +370,7 @@ RSpec.describe Dryer::Routes::Registry do
     end
 
     it " raises an error" do
-      expect { described_class.new.register(resource) }.to raise_error(
+      expect { described_class.new.register(resources) }.to raise_error(
         RuntimeError,
         /Invalid arguments: {:actions=>{:request_contract=>\["must be a dry-validation contract"\]}}/
       )
@@ -337,7 +378,7 @@ RSpec.describe Dryer::Routes::Registry do
   end
 
   context "when response_contracts are not contracts" do
-    let(:resource) do
+    let(:resources) do
       {
         controller: UsersController,
         url: "/users/:id",
@@ -355,7 +396,7 @@ RSpec.describe Dryer::Routes::Registry do
     end
 
     it " raises an error" do
-      expect { described_class.new.register(resource) }.to raise_error(
+      expect { described_class.new.register(resources) }.to raise_error(
         RuntimeError,
         /Invalid arguments: {:actions=>{:response_contracts=>\["must be a dry-validation contract"\]}}/
       )
