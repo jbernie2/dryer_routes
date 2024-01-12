@@ -164,6 +164,27 @@ RSpec.describe Dryer::Routes::Registry do
         registry.routes.length
       ).to eq(4)
     end
+
+    it "accepts a single resource" do
+      registry.register(resources.first)
+      expect(
+        registry.routes.length
+      ).to eq(3)
+    end
+
+    it "accepts an array of resources" do
+      registry.register(resources)
+      expect(
+        registry.routes.length
+      ).to eq(4)
+    end
+
+    it "accepts multiple resources as individual arguments" do
+      registry.register(*resources)
+      expect(
+        registry.routes.length
+      ).to eq(4)
+    end
   end
 
   describe "#to_rails_routes" do

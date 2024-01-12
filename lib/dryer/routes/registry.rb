@@ -11,8 +11,8 @@ module Dryer
         @routes = []
       end
 
-      def register(resources)
-        resources = resources.is_a?(Array) ? resources : [resources]
+      def register(*resources)
+        resources = resources[0].is_a?(Array) ? resources[0] : resources
         validate_resources!(resources)
         @resources = resources
         @routes = resources.map do |r|
