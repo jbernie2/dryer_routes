@@ -91,7 +91,9 @@ class ApplicationController < ActionController::Base
   def validate_request
     request_errors = RouteRegistry.validate_request(request)
     if request_errors.empty?
-      @validated_request_body = Dry::Monads::Success(request.params)
+      @validated_request_body = Dry::Monads::Success(
+        RouteRegistry.get_validated_values(request)
+      )
     else
       @validated_request_body = Dry::Monads::Failure(request_errors)
     end
@@ -136,6 +138,7 @@ class UsersController < ApplicationController
   end
 end
 ```
+where `body` will only contain the keys specified by the contract.
 
 ## Development
 This gem is set up to be developed using [Nix](https://nixos.org/) and
