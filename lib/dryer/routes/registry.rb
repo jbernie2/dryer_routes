@@ -1,6 +1,7 @@
 require_relative "./build_from_resource.rb"
 require_relative "./hash_object.rb"
 require_relative "./resource_schema.rb"
+require_relative "./extract_validated_keys.rb"
 
 module Dryer
   module Routes
@@ -57,6 +58,18 @@ module Dryer
           r.controller == controller &&
             r.method == method
         end.first
+      end
+
+      def get_validated_values(request)
+        route_for(
+          controller: request.controller_class,
+          method: request.request_method_symbol
+        ).then do |route|
+          ExtractValidatedKeys.call(
+            payload: request.params,
+            contract: route.request_contract
+          )
+        end
       end
 
       attr_reader :routes, :resources

@@ -423,4 +423,19 @@ RSpec.describe Dryer::Routes::Registry do
       )
     end
   end
+
+  describe "#get_validated_values" do
+    let(:registry) do
+      described_class.new.tap{ |r| r.register(resources) }
+    end
+
+    context "when there are values in the request that are not in the contract" do
+      let(:request) { Request.new(UsersController, :post, { foo: 'bar', wat: 'something' }) }
+      it "excludes them" do
+        expect(
+          registry.get_validated_values(request)
+        ).to eq({foo: 'bar'})
+      end
+    end
+  end
 end
