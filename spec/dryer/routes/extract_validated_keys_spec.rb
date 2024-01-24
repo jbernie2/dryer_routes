@@ -2,21 +2,23 @@ require_relative "../../../lib/dryer/routes/extract_validated_keys.rb"
 require 'dry-validation'
 
 RSpec.describe Dryer::Routes::ExtractValidatedKeys do
-  class SimpleContract < Dry::Validation::Contract
-    params do
-      required(:foo).filled(:string)
-    end
-  end
+  before do
+    stub_const("SimpleContract", Class.new(Dry::Validation::Contract) do
+      params do
+        required(:foo).filled(:string)
+      end
+    end)
 
-  class NestedContract < Dry::Validation::Contract
-    params do
-      required(:foo).hash do
-        required(:bar).filled(:string)
-        required(:wat).hash do
-          required(:blah).filled(:string)
+    stub_const("NestedContract", Class.new(Dry::Validation::Contract) do
+      params do
+        required(:foo).hash do
+          required(:bar).filled(:string)
+          required(:wat).hash do
+            required(:blah).filled(:string)
+          end
         end
       end
-    end
+    end)
   end
 
   let(:simple_response) do { foo: "bar" } end

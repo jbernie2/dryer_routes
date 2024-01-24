@@ -1,5 +1,4 @@
 require "dryer_services"
-require "debug"
 
 module Dryer
   module Routes

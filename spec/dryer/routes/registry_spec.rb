@@ -4,6 +4,79 @@ require 'dry-validation'
 
 RSpec.describe Dryer::Routes::Registry do
 
+  before do
+    stub_const("Router", Class.new do
+      def post(url, options = {})
+        { method: :post, url: url, options: options}
+      end
+
+      def get(url, options = {})
+        { method: :get, url: url, options: options}
+      end
+
+      def patch(url, options = {})
+        { method: :patch, url: url, options: options}
+      end
+    end)
+
+    stub_const("Request", Class.new do
+      def initialize(controller_class, request_method, params)
+        @request_method_symbol = request_method.to_sym
+        @params = params
+        @controller_class = controller_class
+      end
+
+      attr_reader :controller_class, :params, :request_method_symbol
+    end)
+
+    stub_const("UsersController", Class.new do
+      def self.controller_path
+        "users"
+      end
+      def self.controller_name
+        "users"
+      end
+    end)
+
+    stub_const("TagsController", Class.new do
+      def self.controller_path
+        "tags"
+      end
+      def self.controller_name
+        "tags"
+      end
+    end)
+
+    stub_const("UserCreateRequestContract", Class.new(Dry::Validation::Contract) do
+      params do
+        required(:foo).filled(:string)
+      end
+    end)
+
+    stub_const("TagCreateRequestContract", Class.new(Dry::Validation::Contract) do
+      params do
+        required(:name).filled(:string)
+      end
+    end)
+
+    stub_const("TagCreateResponseContract", Class.new(Dry::Validation::Contract) do
+      params do
+      end
+    end)
+
+    stub_const("UserCreateResponseContract", Class.new(Dry::Validation::Contract) do
+      params do
+        required(:baz).filled(:string)
+      end
+    end)
+
+    stub_const("UserGetResponseContract", Class.new(Dry::Validation::Contract) do
+      params do
+        required(:quux).filled(:string)
+      end
+    end)
+  end
+
   let(:resources) {
     [
       {
@@ -76,77 +149,6 @@ RSpec.describe Dryer::Routes::Registry do
   end
 
   let(:router) { Router.new }
-
-  class Router
-    def post(url, options = {})
-      { method: :post, url: url, options: options}
-    end
-
-    def get(url, options = {})
-      { method: :get, url: url, options: options}
-    end
-
-    def patch(url, options = {})
-      { method: :patch, url: url, options: options}
-    end
-  end
-
-  class Request
-    def initialize(controller_class, request_method, params)
-      @request_method_symbol = request_method.to_sym
-      @params = params
-      @controller_class = controller_class
-    end
-
-    attr_reader :controller_class, :params, :request_method_symbol
-  end
-
-  class UsersController
-    def self.controller_path
-      "users"
-    end
-    def self.controller_name
-      "users"
-    end
-  end
-
-  class TagsController
-    def self.controller_path
-      "tags"
-    end
-    def self.controller_name
-      "tags"
-    end
-  end
-
-  class UserCreateRequestContract < Dry::Validation::Contract
-    params do
-      required(:foo).filled(:string)
-    end
-  end
-
-  class TagCreateRequestContract < Dry::Validation::Contract
-    params do
-      required(:name).filled(:string)
-    end
-  end
-
-  class TagCreateResponseContract < Dry::Validation::Contract
-    params do
-    end
-  end
-
-  class UserCreateResponseContract < Dry::Validation::Contract
-    params do
-      required(:baz).filled(:string)
-    end
-  end
-
-  class UserGetResponseContract < Dry::Validation::Contract
-    params do
-      required(:quux).filled(:string)
-    end
-  end
 
   describe "#register" do
     let(:registry) { described_class.new }
