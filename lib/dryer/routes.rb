@@ -3,9 +3,11 @@ require "rubygems"
 
 module Dryer
   module Routes
-    VERSION = Gem::Specification::load(
-      "./dryer_routes.gemspec"
-    ).version
+    def self.version
+      Gem::Specification::load(
+        "./dryer_routes.gemspec"
+      ).version
+    end
 
     def self.loader
       @loader ||= Zeitwerk::Loader.new.tap do |loader|
