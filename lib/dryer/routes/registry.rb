@@ -1,8 +1,3 @@
-require_relative "./build_from_resource.rb"
-require_relative "./hash_object.rb"
-require_relative "./resource_schema.rb"
-require_relative "./extract_validated_keys.rb"
-
 module Dryer
   module Routes
     class Registry

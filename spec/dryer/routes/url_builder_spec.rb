@@ -1,4 +1,4 @@
-require_relative "../../../lib/dryer/routes/url_builder.rb"
+require_relative "../../../lib/dryer_routes.rb"
 
 RSpec.describe Dryer::Routes::UrlBuilder do
   subject { described_class.call(url) }
