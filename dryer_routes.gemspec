@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name                  = 'dryer_routes'
-  spec.version               = "0.5.0"
+  spec.version               = "0.5.1"
   spec.authors               = ['John Bernier']
   spec.email                 = ['john.b.bernier@gmail.com']
   spec.summary               = 'Typed routing for rails leveraging dry-validation contracts'
