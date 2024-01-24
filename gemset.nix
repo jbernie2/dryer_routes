@@ -128,7 +128,7 @@
     version = "1.10.0";
   };
   dryer_routes = {
-    dependencies = ["dry-types" "dry-validation" "dryer_services"];
+    dependencies = ["dry-types" "dry-validation" "dryer_services" "zeitwerk"];
     groups = ["default"];
     platforms = [];
     source = {

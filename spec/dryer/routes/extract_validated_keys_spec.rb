@@ -1,4 +1,4 @@
-require_relative "../../../lib/dryer/routes/extract_validated_keys.rb"
+require_relative "../../../lib/dryer_routes.rb"
 require 'dry-validation'
 
 RSpec.describe Dryer::Routes::ExtractValidatedKeys do

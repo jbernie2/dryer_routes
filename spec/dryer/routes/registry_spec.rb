@@ -1,5 +1,4 @@
-require_relative "../../../lib/dryer/routes/registry.rb"
-require_relative "../../../lib/dryer/routes/route.rb"
+require_relative "../../../lib/dryer_routes.rb"
 require 'dry-validation'
 
 RSpec.describe Dryer::Routes::Registry do

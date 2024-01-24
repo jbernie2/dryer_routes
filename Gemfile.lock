@@ -5,6 +5,7 @@ PATH
       dry-types (~> 1.7)
       dry-validation (~> 1.10)
       dryer_services (~> 2.0)
+      zeitwerk (~> 2.6)
 
 GEM
   remote: http://rubygems.org/

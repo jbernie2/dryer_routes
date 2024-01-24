@@ -1,4 +1,3 @@
-require_relative "./route"
 require "dryer_services"
 
 module Dryer
