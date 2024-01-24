@@ -8,7 +8,7 @@ RSpec.describe Dryer::Routes::Registry do
     [
       {
         controller: UsersController,
-        url: "/users/:id",
+        url: "/users",
         actions: {
           create: {
             url: "/users",
@@ -58,7 +58,7 @@ RSpec.describe Dryer::Routes::Registry do
   let(:rails_route_user_get) do
     {
       method: :get,
-      url: "/users/:id",
+      url: "/users",
       options: {
         to: "users#find"
       }
@@ -68,7 +68,7 @@ RSpec.describe Dryer::Routes::Registry do
   let(:rails_route_user_patch) do
     {
       method: :patch,
-      url: "/users/:id",
+      url: "/users",
       options: {
         to: "users#update"
       }

@@ -12,7 +12,9 @@ module Dryer
         resource[:actions].map do |action, config|
           Route.new(
             controller: resource[:controller],
-            url: config[:url] || resource[:url],
+            url: Dryer::Routes::UrlBuilder.call(
+              config[:url] || resource[:url]
+            ),
             method: config[:method],
             controller_action: action,
             request_contract: config[:request_contract],

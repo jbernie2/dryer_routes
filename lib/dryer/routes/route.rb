@@ -33,8 +33,12 @@ module Dryer
         route_config[:response_contracts][status]
       end
 
-      def url
-        route_config[:url]
+      def url(*args)
+        if route_config[:url].is_a?(Proc)
+          route_config[:url].call(*args)
+        else
+          route_config[:url]
+        end
       end
 
       private
