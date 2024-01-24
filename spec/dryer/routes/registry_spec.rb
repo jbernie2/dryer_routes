@@ -332,7 +332,7 @@ RSpec.describe Dryer::Routes::Registry do
     end
   end
 
-  it "create a class for each route" do
+  it "creates a class for each route" do
     registry = described_class.new.tap{ |r| r.register(resources) }
     expect(
       registry.users.create

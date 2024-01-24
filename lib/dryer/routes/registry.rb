@@ -14,7 +14,7 @@ module Dryer
         @routes = resources.map do |r|
           BuildFromResource.call(r)
         end.flatten
-        add_accessors_for_resources(resources)
+        ResourceAccessors.call(object: self, resources: resources)
         @routes
       end
 
@@ -71,30 +71,6 @@ module Dryer
 
       private
       attr_writer :routes, :resources
-
-      def add_accessors_for_resources(resources)
-        denormalize_resources(resources).inject(self) do |obj, (key, value)|
-          obj.define_singleton_method(key) { HashObject.new(value) }
-          obj
-        end
-      end
-
-      def denormalize_resources(resources)
-        resources.inject({}) do | h, resource |
-          h[
-            resource[:controller].controller_name.to_sym
-          ] = denormalize_resource(resource)
-          h
-        end
-      end
-
-      def denormalize_resource(resource)
-        resource[:actions].each do |key, value|
-          resource[:actions][key][:url] =
-            resource[:actions][key][:url] || resource[:url]
-        end
-        resource.merge(resource[:actions])
-      end
 
       def validate_resources!(resources)
         errors = resources.map do |r|
