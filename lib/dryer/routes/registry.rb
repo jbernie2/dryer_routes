@@ -55,7 +55,7 @@ module Dryer
         end.first
       end
 
-      def get_validated_values(request)
+      def validated_request_body(request)
         route_for(
           controller: request.controller_class,
           method: request.request_method_symbol
@@ -63,6 +63,18 @@ module Dryer
           ExtractValidatedKeys.call(
             payload: request.params,
             contract: route.request_contract
+          )
+        end
+      end
+
+      def validated_url_parameters(request)
+        route_for(
+          controller: request.controller_class,
+          method: request.request_method_symbol
+        ).then do |route|
+          ExtractValidatedKeys.call(
+            payload: request.params,
+            contract: route.url_parameters_contract
           )
         end
       end

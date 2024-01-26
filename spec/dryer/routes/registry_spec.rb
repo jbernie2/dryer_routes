@@ -52,6 +52,12 @@ RSpec.describe Dryer::Routes::Registry do
       end
     end)
 
+    stub_const("UserIndexUrlParametersContract", Class.new(Dry::Validation::Contract) do
+      params do
+        required(:foo).filled(:string)
+      end
+    end)
+
     stub_const("TagCreateRequestContract", Class.new(Dry::Validation::Contract) do
       params do
         required(:name).filled(:string)
@@ -425,7 +431,7 @@ RSpec.describe Dryer::Routes::Registry do
     end
   end
 
-  describe "#get_validated_values" do
+  describe "#validated_request_body" do
     let(:registry) do
       described_class.new.tap{ |r| r.register(resources) }
     end
@@ -434,7 +440,33 @@ RSpec.describe Dryer::Routes::Registry do
       let(:request) { Request.new(UsersController, :post, { foo: 'bar', wat: 'something' }) }
       it "excludes them" do
         expect(
-          registry.get_validated_values(request)
+          registry.validated_request_body(request)
+        ).to eq({foo: 'bar'})
+      end
+    end
+  end
+
+  describe "#validated_url_parameters" do
+    let(:registry) do
+      described_class.new.tap do |r|
+        r.register({
+          controller: UsersController,
+          url: "/users",
+          actions: {
+            index: {
+              method: :get,
+              url_parameters_contract: UserIndexUrlParametersContract,
+            }
+          }
+        })
+      end
+    end
+
+    context "when there are values in the request that are not in the contract" do
+      let(:request) { Request.new(UsersController, :get, { foo: 'bar', wat: 'something' }) }
+      it "excludes them" do
+        expect(
+          registry.validated_url_parameters(request)
         ).to eq({foo: 'bar'})
       end
     end

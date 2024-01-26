@@ -15,6 +15,7 @@ module Dryer
             method: config[:method],
             controller_action: action,
             request_contract: config[:request_contract],
+            url_parameters_contract: config[:url_parameters_contract],
             response_contracts: config[:response_contracts]
           )
         end

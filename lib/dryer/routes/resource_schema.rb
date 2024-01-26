@@ -13,18 +13,25 @@ module Dryer
         params do
           required(:method).filled(:symbol)
           optional(:request_contract)
+          optional(:url_parameters_contract)
           optional(:response_contracts).hash()
         end
 
         rule(:request_contract) do
-          if value && !value.ancestors.include?(Dry::Validation::Contract)
+          if value && !(value <= Dry::Validation::Contract)
+            key.failure('must be a dry-validation contract')
+          end
+        end
+
+        rule(:url_parameters_contract) do
+          if value && !(value <= Dry::Validation::Contract)
             key.failure('must be a dry-validation contract')
           end
         end
 
         rule(:response_contracts) do
           values[:response_contracts].each do |key, value|
-            if !value.ancestors.include?(Dry::Validation::Contract)
+            if !(value <= Dry::Validation::Contract)
               key(:response_contracts).failure(
                 'must be a dry-validation contract'
               )

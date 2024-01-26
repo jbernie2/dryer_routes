@@ -29,6 +29,10 @@ module Dryer
         route_config[:request_contract]
       end
 
+      def url_parameters_contract
+        route_config[:url_parameters_contract]
+      end
+
       def response_contract_for(status)
         route_config[:response_contracts][status]
       end
