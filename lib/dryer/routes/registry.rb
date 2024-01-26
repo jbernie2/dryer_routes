@@ -35,6 +35,19 @@ module Dryer
         end
       end
 
+      def validate_url_parameters(request)
+        route_for(
+          controller: request.controller_class,
+          method: request.request_method_symbol
+        ).then do |route|
+          if route && route.url_parameters_contract
+            route.url_parameters_contract.new.call(request.params).errors
+          else
+            []
+          end
+        end
+      end
+
       def validate_response(controller:, method:, status:, body:)
         route_for(
           controller: controller.class,
