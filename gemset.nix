@@ -135,7 +135,7 @@
       path = ./.;
       type = "path";
     };
-    version = "0.6.0";
+    version = "0.6.1";
   };
   dryer_services = {
     dependencies = ["dry-monads"];
