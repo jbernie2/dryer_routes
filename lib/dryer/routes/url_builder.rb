@@ -19,7 +19,7 @@ module Dryer
       attr_reader :url
       
       def path_variables
-        @path_variables ||= url.match(/(:\w*)/)
+        @path_variables ||= url.scan(/:\w+/)
       end
 
       def contains_path_variables?
